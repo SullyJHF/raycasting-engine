@@ -32,7 +32,7 @@ public class SpriteSheet {
   public BufferedImage getSprite(int index) {
     if(index < 0) return null;
     int x = (index * this.spriteSize) % this.w;
-    int y = (int) Math.floor((index * this.spriteSize) / this.w) * this.spriteSize;
+    int y = (int) Math.floor((index * this.spriteSize) / this.h) * this.spriteSize;
     BufferedImage sprite = this.image.getSubimage(x, y, this.spriteSize, this.spriteSize);
     //    System.out.printf("x: %d y: %d width: %d height %d%n", x, y, this.spriteSize, this.spriteSize);
     return sprite;
