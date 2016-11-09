@@ -1,0 +1,41 @@
+Todo
+----
+Engine
+------
+- Texture mapping
+
+Map
+---
+~ Map class
+  ~ get array of pixels from image-
+- Make title of map file be the title of the level, without first numbers
+  - i.e. 00Corridor of Doom, 01Snail Lagoon
+  - Maybe have these in a folder and have that be the chapter name or something
+    - same format xxname
+- Allow sky/floor colours to be chosen from the map file somehow?
+- Allow setting of the initial player position from the map file too
+~ Don't flip the map file in the y axis
+
+Spritesheet
+-----------
+- Spritesheet class
+- Take file as spritesheet
+- getSprite
+  - give it x to return a texture at index x, left -> right top -> bottom
+
+Player
+------
+~ sideways collision
+- proper collision
+  - make the player have a radius
+- fix the forward + sideways collision
+- Acceleration
+  - don't instantly speed up to max speed
+- Add bob
+- set start position based on angle
+
+Gameplay
+--------
+- Make a goal
+- Add weapons
+- Enemies
