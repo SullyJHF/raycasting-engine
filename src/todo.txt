@@ -16,6 +16,14 @@ Map
 - Allow setting of the initial player position from the map file too
 ~ Don't flip the map file in the y axis
 
+World Map
+---------
+~ Take a map file as a parameter
+- Show current and viewed map but not stuff you've not seen yet
+  - This is going to be bloody hard
+~ But start off with displaying the entire map
+ ~ and cropping some of the map out
+
 Spritesheet
 -----------
 - Spritesheet class
