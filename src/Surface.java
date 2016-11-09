@@ -12,7 +12,6 @@ import javax.swing.Timer;
 
 public class Surface extends JPanel implements ActionListener {
   private boolean debugText = false;
-  private Graphics g;
   private Timer t;
   private ColourHandler ch = new ColourHandler();
   private double goalFps = 60;
