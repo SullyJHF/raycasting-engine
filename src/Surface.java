@@ -152,8 +152,11 @@ public class Surface extends JPanel implements ActionListener {
           mapY += stepY;
           side = 1;
         }
-        if (mapX >= mapWidth) hit = -1;
-        if (mapY >= mapHeight) hit = -1;
+        if(sideDistX > VIEW_DISTANCE && sideDistY > VIEW_DISTANCE) {
+          hit = -1;
+        }
+        if (mapX >= this.mapHeight) hit = -1;
+        if (mapY >= this.mapWidth) hit = -1;
         if (mapX < 0) hit = -1;
         if (mapY < 0) hit = -1;
         if (hit == -1) {
