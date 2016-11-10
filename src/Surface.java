@@ -24,6 +24,7 @@ public class Surface extends JPanel implements ActionListener {
   private final int SCALE = 3;
   private final int SCREEN_HEIGHT = 200;
   private final int SCREEN_WIDTH = 320;
+  private final int VIEW_DISTANCE = 64;
 
   private SpriteSheet ss;
   private final int TEX_SIZE = 16;
@@ -254,14 +255,13 @@ public class Surface extends JPanel implements ActionListener {
     this.fps = String.valueOf(Math.round(fps * 100.0) / 100.0) + " FPS";
   }
 
-  private boolean checkOoB(int nextX, int nextY) {
-    boolean move = true;
-    if (nextX >= this.mapHeight) move = false;
-    if (nextY >= this.mapWidth) move = false;
-    if (nextX <= 0) move = false;
-    if (nextY <= 0) move = false;
-    if (move && mapArray[nextX][nextY] != 0) move = false;
-    return move;
+  private boolean checkOoB(double nextX, double nextY) {
+    if (nextX >= this.mapHeight) return false;
+    if (nextY >= this.mapWidth) return false;
+    if (nextX < 0.0) return false;
+    if (nextY < 0.0) return false;
+    if (mapArray[(int)nextX][(int)nextY] != 0) return false;
+    return true;
   }
 
   private void spinLeft() {
@@ -274,8 +274,8 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void moveForward() {
-    if (checkOoB((int) (posX + dirX * moveSpeed), (int) posY)) posX += dirX * moveSpeed;
-    if (checkOoB((int) posX, (int) (posY + dirY * moveSpeed))) posY += dirY * moveSpeed;
+    if (checkOoB(posX + dirX * moveSpeed, posY)) posX += dirX * moveSpeed;
+    if (checkOoB(posX, posY + dirY * moveSpeed)) posY += dirY * moveSpeed;
   }
 
   private void strafe(boolean direction) {
@@ -284,8 +284,8 @@ public class Surface extends JPanel implements ActionListener {
     double oldDirX = dirX;
     double newDirX = dirX * Math.cos(d * Math.PI / 2) - dirY * Math.sin(d * Math.PI / 2);
     double newDirY = oldDirX * Math.sin(d * Math.PI / 2) + dirY * Math.cos(d * Math.PI / 2);
-    if (checkOoB((int) (posX + newDirX * moveSpeed), (int) posY)) posX += newDirX * moveSpeed;
-    if (checkOoB((int) posX, (int) (posY + newDirY * moveSpeed))) posY += newDirY * moveSpeed;
+    if (checkOoB(posX + newDirX * moveSpeed, posY)) posX += newDirX * moveSpeed;
+    if (checkOoB(posX, posY + newDirY * moveSpeed)) posY += newDirY * moveSpeed;
   }
 
   private void spinRight() {
@@ -298,8 +298,8 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void moveBackwards() {
-    if (checkOoB((int) (posX - dirX * moveSpeed), (int) posY)) posX -= dirX * moveSpeed;
-    if (checkOoB((int) posX, (int) (posY - dirY * moveSpeed))) posY -= dirY * moveSpeed;
+    if (checkOoB(posX - dirX * moveSpeed, posY)) posX -= dirX * moveSpeed;
+    if (checkOoB(posX, posY - dirY * moveSpeed)) posY -= dirY * moveSpeed;
   }
 
   public String getTitle() {
