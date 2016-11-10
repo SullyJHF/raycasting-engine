@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Surface extends JPanel implements ActionListener {
-  private boolean debugText = false;
+  private boolean debugText = true;
   private Timer t;
   private ColourHandler ch = new ColourHandler();
   private double goalFps = 60;
@@ -67,7 +67,7 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void initGameWorld() {
-    this.m = new Map("res/00Dungeon_of_the_Damned.png", "Test map");
+    this.m = new Map("res/wolf1-1.png", "Test map");
     this.ss = new SpriteSheet("res/16x16_textures.png");
     this.mapArray = m.getMapArray();
     this.mapWidth = m.getWidth();
@@ -84,8 +84,8 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void setStartPosition() {
-    this.posX = 62;
-    this.posY = 2;
+    this.posX = 50;
+    this.posY = 31;
 
     this.dirX = -1;
     this.dirY = 0;
@@ -99,9 +99,9 @@ public class Surface extends JPanel implements ActionListener {
     Graphics2D g2d = (Graphics2D) g.create();
 
     // draw sky and ground
-    g2d.setColor(ch.BLUE.brighter());
+    g2d.setColor(ch.DARK_GRAY.darker());
     g2d.fillRect(0, 0, SCREEN_WIDTH * SCALE, (SCREEN_HEIGHT / 2) * SCALE);
-    g2d.setColor(ch.BLACK.brighter());
+    g2d.setColor(ch.LIGHT_GRAY.darker());
     g2d.fillRect(0, (SCREEN_HEIGHT / 2) * SCALE, SCREEN_WIDTH * SCALE, (SCREEN_HEIGHT / 2) * SCALE);
 
     // Loop through each column on the screen
@@ -142,6 +142,7 @@ public class Surface extends JPanel implements ActionListener {
         sideDistY = (mapY + 1.0 - rayPosY) * deltaDistY;
       }
 
+      // DDA algorithm
       while (hit == 0) {
         if (sideDistX < sideDistY) {
           sideDistX += deltaDistX;
