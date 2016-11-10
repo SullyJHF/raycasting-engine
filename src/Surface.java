@@ -259,13 +259,13 @@ public class Surface extends JPanel implements ActionListener {
     this.fps = String.valueOf(Math.round(fps * 100.0) / 100.0) + " FPS";
   }
 
-  private boolean checkOoB(double nextX, double nextY) {
-    if (nextX >= this.mapHeight) return false;
-    if (nextY >= this.mapWidth) return false;
-    if (nextX < 0.0) return false;
-    if (nextY < 0.0) return false;
-    if (mapArray[(int)nextX][(int)nextY] != 0) return false;
-    return true;
+  private double checkCollision(double nextX, double nextY, double amount) {
+    if (nextX >= this.mapHeight) return 0;
+    if (nextY >= this.mapWidth) return 0;
+    if (nextX < 0.0) return 0;
+    if (nextY < 0.0) return 0;
+    if (mapArray[(int)nextX][(int)nextY] != 0) return 0;
+    return amount;
   }
 
   private void spinLeft() {
@@ -278,8 +278,8 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void moveForward() {
-    if (checkOoB(posX + dirX * moveSpeed, posY)) posX += dirX * moveSpeed;
-    if (checkOoB(posX, posY + dirY * moveSpeed)) posY += dirY * moveSpeed;
+    posX += checkCollision(posX + dirX * moveSpeed, posY, dirX * moveSpeed);
+    posY += checkCollision(posX, posY + dirY * moveSpeed, dirY * moveSpeed);
   }
 
   private void strafe(boolean direction) {
@@ -288,8 +288,8 @@ public class Surface extends JPanel implements ActionListener {
     double oldDirX = dirX;
     double newDirX = dirX * Math.cos(d * Math.PI / 2) - dirY * Math.sin(d * Math.PI / 2);
     double newDirY = oldDirX * Math.sin(d * Math.PI / 2) + dirY * Math.cos(d * Math.PI / 2);
-    if (checkOoB(posX + newDirX * moveSpeed, posY)) posX += newDirX * moveSpeed;
-    if (checkOoB(posX, posY + newDirY * moveSpeed)) posY += newDirY * moveSpeed;
+    posX += checkCollision(posX + newDirX * moveSpeed, posY, newDirX * moveSpeed);
+    posY += checkCollision(posX, posY + newDirY * moveSpeed, newDirY * moveSpeed);
   }
 
   private void spinRight() {
@@ -302,8 +302,8 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void moveBackwards() {
-    if (checkOoB(posX - dirX * moveSpeed, posY)) posX -= dirX * moveSpeed;
-    if (checkOoB(posX, posY - dirY * moveSpeed)) posY -= dirY * moveSpeed;
+    posX += checkCollision(posX - dirX * moveSpeed, posY, dirX * -moveSpeed);
+    posY += checkCollision(posX, posY - dirY * moveSpeed, dirY * -moveSpeed);
   }
 
   public String getTitle() {
