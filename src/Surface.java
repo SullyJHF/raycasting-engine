@@ -67,8 +67,8 @@ public class Surface extends JPanel implements ActionListener {
   }
 
   private void initGameWorld() {
-    this.m = new Map("res/wolf1-1.png", "Test map");
-    this.ss = new SpriteSheet("res/16x16_textures.png");
+    this.m = new Map("res/map/wolf1-1.png", "Test map");
+    this.ss = new SpriteSheet("res/tex/16x16_textures.png");
     this.mapArray = m.getMapArray();
     this.mapWidth = m.getWidth();
     this.mapHeight = m.getHeight();
