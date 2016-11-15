@@ -284,25 +284,28 @@ public class Surface extends JPanel implements ActionListener {
 
   private boolean entityAt(int posX, int posY) {
     for (Entity e : entities) {
-      if (!e.getWalkThrough() && (int) e.getPosX() == player.getPosX() && (int) e.getPosY() == player.getPosY()) { return true; }
+      if (!e.getWalkThrough() && (int) e.getPosX() == posX && (int) e.getPosY() == posY) { return true; }
     }
     return false;
   }
 
   private int getNextPosX() {
-    return (int) (player.getPosX() + player.getDirX() * moveSpeed);
+    if (player.getPosX() + player.getDirX() * moveSpeed > player.getPosX()) return (int) (player.getPosX() + player.getDirX() * moveSpeed + player.getWidth());
+    else return (int) (player.getPosX() + player.getDirX() * moveSpeed - player.getWidth());
   }
 
   private int getNextPosY() {
-    return (int) (player.getPosY() + player.getDirY() * moveSpeed);
+    if (player.getPosY() + player.getDirY() * moveSpeed > player.getPosY()) return (int) (player.getPosY() + player.getDirY() * moveSpeed + player.getWidth());
+    else return (int) (player.getPosY() + player.getDirY() * moveSpeed - player.getWidth());
   }
 
   private double checkCollision(double nextX, double nextY, double amount) {
-    System.out.printf("X: %.2f, Y: %.2f, nX: %.2f, nY: %.2f%n", player.getPosX(), player.getPosY(), nextX, nextY);
-    if(nextX > player.getPosX()) nextX += player.getWidth();
+    //    System.out.printf("X: %.2f, Y: %.2f, nX: %.2f, nY: %.2f%n", player.getPosX(), player.getPosY(), nextX, nextY);
+    if (nextX > player.getPosX()) nextX += player.getWidth();
     else nextX -= player.getWidth();
-    if(nextY > player.getPosY()) nextY += player.getWidth();
+    if (nextY > player.getPosY()) nextY += player.getWidth();
     else nextY -= player.getWidth();
+
     if (nextX - player.getWidth() >= this.mapHeight) return 0;
     if (nextY - player.getWidth() >= this.mapWidth) return 0;
     if (nextX + player.getWidth() < 0.0) return 0;
