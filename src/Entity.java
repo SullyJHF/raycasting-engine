@@ -6,8 +6,17 @@ public class Entity {
   private double posY;
   private double dirX;
   private double dirY;
+  private double width;
 
   private boolean canWalkThrough = false;
+
+  public Entity(double posX, double posY, double dirX, double dirY, double width) {
+    this.posX = posX;
+    this.posY = posY;
+    this.dirX = dirX;
+    this.dirY = dirY;
+    this.width = width / 64.0;
+  }
 
   public Entity(BufferedImage sprite, double posX, double posY, double dirX, double dirY, boolean canWalkThrough) {
     this.sprite = sprite;
@@ -30,16 +39,32 @@ public class Entity {
     return this.posX;
   }
 
+  public void setPosX(double posX) {
+    this.posX = posX;
+  }
+
   public double getPosY() {
     return this.posY;
+  }
+
+  public void setPosY(double posY) {
+    this.posY = posY;
   }
 
   public double getDirX() {
     return this.dirX;
   }
 
+  public void setDirX(double dirX) {
+    this.dirX = dirX;
+  }
+
   public double getDirY() {
     return this.dirY;
+  }
+
+  public void setDirY(double dirY) {
+    this.dirY = dirY;
   }
 
   public boolean getWalkThrough() {
@@ -48,5 +73,9 @@ public class Entity {
 
   public void setWalkThrough(boolean walkThrough) {
     this.canWalkThrough = walkThrough;
+  }
+
+  public double getWidth() {
+    return this.width;
   }
 }

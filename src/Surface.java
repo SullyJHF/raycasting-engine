@@ -44,6 +44,7 @@ public class Surface extends JPanel implements ActionListener {
   double dirX, dirY;
   double planeX, planeY;
   double moveSpeed, rotSpeed;
+  Player player;
   private boolean oldAction = false;
 
   private ArrayList<Entity> entities = new ArrayList<Entity>();
@@ -97,6 +98,7 @@ public class Surface extends JPanel implements ActionListener {
     this.planeY = 0.66;
     this.planeX = 0;
 
+    player = new Player(posX, posY, dirX, dirY, 16);
     Door door = new Door(ss.getSprite(4), 48, 31, -1, 0, false);
     entities.add(door);
   }
@@ -113,10 +115,10 @@ public class Surface extends JPanel implements ActionListener {
     // Loop through each column on the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
       double cameraX = 2 * x / (double) SCREEN_WIDTH - 1;
-      double rayPosX = posX;
-      double rayPosY = posY;
-      double rayDirX = dirX + planeX * cameraX;
-      double rayDirY = dirY + planeY * cameraX;
+      double rayPosX = player.getPosX();
+      double rayPosY = player.getPosY();
+      double rayDirX = player.getDirX() + planeX * cameraX;
+      double rayDirY = player.getDirY() + planeY * cameraX;
 
       int mapX = (int) rayPosX;
       int mapY = (int) rayPosY;
@@ -242,18 +244,18 @@ public class Surface extends JPanel implements ActionListener {
         updateFps(1.0 / frameTime);
       }
       g2d.drawString(this.fps, 0, 18);
-      g2d.drawString("dirX: " + String.valueOf(Math.round(dirX * 100.0) / 100.0), 0, 50);
-      g2d.drawString("dirY: " + String.valueOf(Math.round(dirY * 100.0) / 100.0), 0, 75);
-      double newDirX = Math.toDegrees(Math.acos(Math.round(dirX * 100.0) / 100.0));
-      double newDirY = Math.toDegrees(Math.acos(Math.round(dirY * 100.0) / 100.0));
+      g2d.drawString("dirX: " + String.valueOf(Math.round(player.getDirX() * 100.0) / 100.0), 0, 50);
+      g2d.drawString("dirY: " + String.valueOf(Math.round(player.getDirY() * 100.0) / 100.0), 0, 75);
+      double newDirX = Math.toDegrees(Math.acos(Math.round(player.getDirX() * 100.0) / 100.0));
+      double newDirY = Math.toDegrees(Math.acos(Math.round(player.getDirY() * 100.0) / 100.0));
       g2d.drawString("newDirX: " + String.valueOf(Math.round(newDirX * 100.0) / 100.0), 0, 100);
       g2d.drawString("newDirY: " + String.valueOf(Math.round(newDirY * 100.0) / 100.0), 0, 125);
 
-      g2d.drawString("posX: " + String.valueOf(Math.round(posX * 100.0) / 100.0), 100, 50);
-      g2d.drawString("posY: " + String.valueOf(Math.round(posY * 100.0) / 100.0), 100, 75);
+      g2d.drawString("posX: " + String.valueOf(Math.round(player.getPosX() * 100.0) / 100.0), 100, 50);
+      g2d.drawString("posY: " + String.valueOf(Math.round(player.getPosY() * 100.0) / 100.0), 100, 75);
     }
 
-    BufferedImage mapImg = m.getSubAlphaImage(new Color(255, 0, 255), this.posX, this.posY, 10);
+    BufferedImage mapImg = m.getSubAlphaImage(new Color(255, 0, 255), player.getPosX(), player.getPosY(), 10);
 
     g2d.drawImage(mapBG, 0, (this.SCREEN_HEIGHT * SCALE) - (mapImg.getHeight() * (WORLD_MAP_SIZE + 1) * SCALE),
         mapImg.getWidth() * SCALE * (WORLD_MAP_SIZE + 1), mapImg.getHeight() * SCALE * (WORLD_MAP_SIZE + 1), null);
@@ -282,65 +284,70 @@ public class Surface extends JPanel implements ActionListener {
 
   private boolean entityAt(int posX, int posY) {
     for (Entity e : entities) {
-      if (!e.getWalkThrough() && (int) e.getPosX() == posX && (int) e.getPosY() == posY) { return true; }
+      if (!e.getWalkThrough() && (int) e.getPosX() == player.getPosX() && (int) e.getPosY() == player.getPosY()) { return true; }
     }
     return false;
   }
 
   private int getNextPosX() {
-    return (int) (posX + dirX * moveSpeed);
+    return (int) (player.getPosX() + player.getDirX() * moveSpeed);
   }
 
   private int getNextPosY() {
-    return (int) (posY + dirY * moveSpeed);
+    return (int) (player.getPosY() + player.getDirY() * moveSpeed);
   }
 
   private double checkCollision(double nextX, double nextY, double amount) {
-    if (nextX >= this.mapHeight) return 0;
-    if (nextY >= this.mapWidth) return 0;
-    if (nextX < 0.0) return 0;
-    if (nextY < 0.0) return 0;
+    System.out.printf("X: %.2f, Y: %.2f, nX: %.2f, nY: %.2f%n", player.getPosX(), player.getPosY(), nextX, nextY);
+    if(nextX > player.getPosX()) nextX += player.getWidth();
+    else nextX -= player.getWidth();
+    if(nextY > player.getPosY()) nextY += player.getWidth();
+    else nextY -= player.getWidth();
+    if (nextX - player.getWidth() >= this.mapHeight) return 0;
+    if (nextY - player.getWidth() >= this.mapWidth) return 0;
+    if (nextX + player.getWidth() < 0.0) return 0;
+    if (nextY + player.getWidth() < 0.0) return 0;
     if (mapArray[(int) nextX][(int) nextY] != 0) return 0;
     if (entityAt((int) nextX, (int) nextY)) return 0;
     return amount;
   }
 
   private void spinLeft() {
-    double oldDirX = dirX;
-    dirX = dirX * Math.cos(rotSpeed) - dirY * Math.sin(rotSpeed);
-    dirY = oldDirX * Math.sin(rotSpeed) + dirY * Math.cos(rotSpeed);
+    double oldDirX = player.getDirX();
+    player.setDirX(player.getDirX() * Math.cos(rotSpeed) - player.getDirY() * Math.sin(rotSpeed));
+    player.setDirY(oldDirX * Math.sin(rotSpeed) + player.getDirY() * Math.cos(rotSpeed));
     double oldPlaneX = planeX;
     planeX = planeX * Math.cos(rotSpeed) - planeY * Math.sin(rotSpeed);
     planeY = oldPlaneX * Math.sin(rotSpeed) + planeY * Math.cos(rotSpeed);
   }
 
   private void moveForward() {
-    posX += checkCollision(posX + dirX * moveSpeed, posY, dirX * moveSpeed);
-    posY += checkCollision(posX, posY + dirY * moveSpeed, dirY * moveSpeed);
+    player.setPosX(player.getPosX() + checkCollision(player.getPosX() + player.getDirX() * moveSpeed, player.getPosY(), player.getDirX() * moveSpeed));
+    player.setPosY(player.getPosY() + checkCollision(player.getPosX(), player.getPosY() + player.getDirY() * moveSpeed, player.getDirY() * moveSpeed));
   }
 
   private void strafe(boolean direction) {
     // true = right
     int d = direction ? -1 : 1;
-    double oldDirX = dirX;
-    double newDirX = dirX * Math.cos(d * Math.PI / 2) - dirY * Math.sin(d * Math.PI / 2);
-    double newDirY = oldDirX * Math.sin(d * Math.PI / 2) + dirY * Math.cos(d * Math.PI / 2);
-    posX += checkCollision(posX + newDirX * moveSpeed, posY, newDirX * moveSpeed);
-    posY += checkCollision(posX, posY + newDirY * moveSpeed, newDirY * moveSpeed);
+    double oldDirX = player.getDirX();
+    double newDirX = player.getDirX() * Math.cos(d * Math.PI / 2) - player.getDirY() * Math.sin(d * Math.PI / 2);
+    double newDirY = oldDirX * Math.sin(d * Math.PI / 2) + player.getDirY() * Math.cos(d * Math.PI / 2);
+    player.setPosX(player.getPosX() + checkCollision(player.getPosX() + newDirX * moveSpeed, player.getPosY(), newDirX * moveSpeed));
+    player.setPosY(player.getPosY() + checkCollision(player.getPosX(), player.getPosY() + newDirY * moveSpeed, newDirY * moveSpeed));
   }
 
   private void spinRight() {
-    double oldDirX = dirX;
-    dirX = dirX * Math.cos(-rotSpeed) - dirY * Math.sin(-rotSpeed);
-    dirY = oldDirX * Math.sin(-rotSpeed) + dirY * Math.cos(-rotSpeed);
+    double oldDirX = player.getDirX();
+    player.setDirX(player.getDirX() * Math.cos(-rotSpeed) - player.getDirY() * Math.sin(-rotSpeed));
+    player.setDirY(oldDirX * Math.sin(-rotSpeed) + player.getDirY() * Math.cos(-rotSpeed));
     double oldPlaneX = planeX;
     planeX = planeX * Math.cos(-rotSpeed) - planeY * Math.sin(-rotSpeed);
     planeY = oldPlaneX * Math.sin(-rotSpeed) + planeY * Math.cos(-rotSpeed);
   }
 
   private void moveBackwards() {
-    posX += checkCollision(posX - dirX * moveSpeed, posY, dirX * -moveSpeed);
-    posY += checkCollision(posX, posY - dirY * moveSpeed, dirY * -moveSpeed);
+    player.setPosX(player.getPosX() + checkCollision(player.getPosX() - player.getDirX() * moveSpeed, player.getPosY(), player.getDirX() * -moveSpeed));
+    player.setPosY(player.getPosY() + checkCollision(player.getPosX(), player.getPosY() - player.getDirY() * moveSpeed, player.getDirY() * -moveSpeed));
   }
 
   public String getTitle() {
