@@ -11,6 +11,7 @@ public class Main extends JFrame implements KeyListener {
   public static boolean down = false;
   public static boolean rotLeft = false;
   public static boolean rotRight = false;
+  public static boolean action = false;
 
   public Main() {
     initUI();
@@ -51,6 +52,8 @@ public class Main extends JFrame implements KeyListener {
      * left = 37
      * down = 39
      * right = 40
+     *
+     * space = 32
      */
     if (e.getKeyCode() == 65) left = true;
     if (e.getKeyCode() == 87) up = true;
@@ -59,6 +62,8 @@ public class Main extends JFrame implements KeyListener {
 
     if (e.getKeyCode() == 37) rotLeft = true;
     if (e.getKeyCode() == 39) rotRight = true;
+
+    if (e.getKeyCode() == 32) action = true;
   }
 
   @Override
@@ -70,6 +75,8 @@ public class Main extends JFrame implements KeyListener {
 
     if (e.getKeyCode() == 37) rotLeft = false;
     if (e.getKeyCode() == 39) rotRight = false;
+
+    if (e.getKeyCode() == 32) action = false;
   }
 
   @Override

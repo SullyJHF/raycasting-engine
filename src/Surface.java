@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -43,6 +44,9 @@ public class Surface extends JPanel implements ActionListener {
   double dirX, dirY;
   double planeX, planeY;
   double moveSpeed, rotSpeed;
+  private boolean oldAction = false;
+
+  private ArrayList<Entity> entities = new ArrayList<Entity>();
 
   double time;
   double oldTime;
@@ -93,6 +97,8 @@ public class Surface extends JPanel implements ActionListener {
     this.planeY = 0.66;
     this.planeX = 0;
 
+    Door door = new Door(ss.getSprite(4), 48, 31, -1, 0, false);
+    entities.add(door);
   }
 
   private void tick(Graphics g) {
@@ -153,7 +159,7 @@ public class Surface extends JPanel implements ActionListener {
           mapY += stepY;
           side = 1;
         }
-        if(sideDistX > VIEW_DISTANCE && sideDistY > VIEW_DISTANCE) {
+        if (sideDistX > VIEW_DISTANCE && sideDistY > VIEW_DISTANCE) {
           hit = -1;
         }
         if (mapX >= this.mapHeight) hit = -1;
@@ -223,6 +229,9 @@ public class Surface extends JPanel implements ActionListener {
     if (Main.down) moveBackwards();
     if (Main.left) strafe(false);
     if (Main.right) strafe(true);
+    if (Main.action && (Main.action != oldAction)) actionEntity();
+
+    oldAction = Main.action;
 
     if (debugText) {
       g2d.setColor(Color.BLACK);
@@ -259,12 +268,40 @@ public class Surface extends JPanel implements ActionListener {
     this.fps = String.valueOf(Math.round(fps * 100.0) / 100.0) + " FPS";
   }
 
+  private void actionEntity() {
+    int nextPosX = getNextPosX();
+    int nextPosY = getNextPosY();
+    //    System.out.printf("Checking x: %d, y: %d%n", nextPosX, nextPosY);
+    for (Entity e : entities) {
+      if (e.getPosX() == nextPosX && e.getPosY() == nextPosY) {
+        e.action();
+        System.out.println("ACTION!");
+      }
+    }
+  }
+
+  private boolean entityAt(int posX, int posY) {
+    for (Entity e : entities) {
+      if (!e.getWalkThrough() && (int) e.getPosX() == posX && (int) e.getPosY() == posY) { return true; }
+    }
+    return false;
+  }
+
+  private int getNextPosX() {
+    return (int) (posX + dirX * moveSpeed);
+  }
+
+  private int getNextPosY() {
+    return (int) (posY + dirY * moveSpeed);
+  }
+
   private double checkCollision(double nextX, double nextY, double amount) {
     if (nextX >= this.mapHeight) return 0;
     if (nextY >= this.mapWidth) return 0;
     if (nextX < 0.0) return 0;
     if (nextY < 0.0) return 0;
-    if (mapArray[(int)nextX][(int)nextY] != 0) return 0;
+    if (mapArray[(int) nextX][(int) nextY] != 0) return 0;
+    if (entityAt((int) nextX, (int) nextY)) return 0;
     return amount;
   }
 
